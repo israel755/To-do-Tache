@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Mes tâches - To-Do List</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
+      color: #333;
+    }
+
+    header {
+      text-align: center;
+      padding: 20px;
+      font-size: 2.5em;
+      font-weight: bold;
+      background: #007bff;
+      color: white;
+    }
+
+    .task-list {
+      max-width: 600px;
+      margin: 40px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .task-item {
+      padding: 12px;
+      margin: 8px 0;
+      background: #f8f9fa;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .task-item:hover {
+      background: #e2e6ea;
+    }
+
+    /* --- Popup --- */
+    .popup {
+      display: none; 
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .popup-content {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      width: 300px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .popup-content input {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .popup-content button {
+      padding: 10px 15px;
+      margin: 5px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .save-btn {
+      background: #28a745;
+      color: white;
+    }
+
+    .save-btn:hover {
+      background: #218838;
+    }
+
+    .delete-btn {
+      background: #dc3545;
+      color: white;
+    }
+
+    .delete-btn:hover {
+      background: #c82333;
+    }
+
+    .cancel-btn {
+      background: #6c757d;
+      color: white;
+    }
+
+    .cancel-btn:hover {
+      background: #5a6268;
+    }
+  </style>
+</head>
+<body>
+  <header>📋 Mes tâches</header>
+
+  <div class="task-list" id="taskList">
+    <!-- Les tâches apparaîtront ici -->
+  </div>
+
+  <!-- Popup pour modification -->
+  <div class="popup" id="popup">
+    <div class="popup-content">
+      <h3>Modifier la tâche</h3>
+      <input type="text" id="editInput">
+      <br>
+      <button class="save-btn" onclick="saveTask()">Enregistrer</button>
+      <button class="delete-btn" onclick="deleteTask()">Supprimer</button>
+      <button class="cancel-btn" onclick="closePopup()">Annuler</button>
+    </div>
+  </div>
+
+  <script>
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    let currentIndex = null;
+
+    // Afficher toutes les tâches
+    function renderTasks() {
+      const list = document.getElementById("taskList");
+      list.innerHTML = "";
+
+      if (tasks.length === 0) {
+        list.innerHTML = "<p>Aucune tâche ajoutée.</p>";
+        return;
+      }
+
+      tasks.forEach((task, index) => {
+        const div = document.createElement("div");
+        div.className = "task-item";
+        div.textContent = task;
+        div.onclick = () => openPopup(index);
+        list.appendChild(div);
+      });
+    }
+
+    // Ouvrir popup
+    function openPopup(index) {
+      currentIndex = index;
+      document.getElementById("editInput").value = tasks[index];
+      document.getElementById("popup").style.display = "flex";
+    }
+
+    // Fermer popup
+    function closePopup() {
+      document.getElementById("popup").style.display = "none";
+    }
+
+    // Enregistrer modifications
+    function saveTask() {
+      const newText = document.getElementById("editInput").value.trim();
+      if (newText) {
+        tasks[currentIndex] = newText;
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+        renderTasks();
+        closePopup();
+      } else {
+        alert("Veuillez entrer un texte !");
+      }
+    }
+
+   // Supprimer tâche avec confirmation
+function deleteTask() {
+  if (confirm("Êtes-vous sûr de vouloir supprimer cette tâche ?")) {
+    tasks.splice(currentIndex, 1);                  // Supprime la tâche
+    localStorage.setItem("tasks", JSON.stringify(tasks)); // Met à jour le localStorage
+    renderTasks();                                  // Rafraîchit l'affichage
+    closePopup();                                   // Ferme la popup
+  }
+}
+
+
+    // Charger au début
+    renderTasks();
+  </script>
+</body>
+</html>

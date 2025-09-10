@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Accueil - Ma To-Do List</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      scroll-behavior: smooth;
+    }
+
+    /* --- Section Welcome --- */
+    .welcome-box {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
+      text-align: center;
+      color: #333;
+    }
+
+    .welcome-content {
+      background: white;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      display: inline-block;
+    }
+
+    .welcome-content h1 {
+      font-size: 3em;
+      color: #007bff;
+      margin-bottom: 20px;
+    }
+
+    .welcome-content p {
+      font-size: 1.2em;
+      margin-bottom: 30px;
+    }
+
+    .welcome-content a {
+      display: inline-block;
+      padding: 12px 25px;
+      background: #28a745;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      transition: 0.3s;
+      cursor: pointer;
+    }
+
+    .welcome-content a:hover {
+      background: #218838;
+    }
+
+    /* --- Section First (page 2) --- */
+    #first {
+      height: 100vh;
+      background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* --- En-tête --- */
+    header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 20vh;
+      font-size: 4em;
+      font-weight: bold;
+      color: white;
+      background: #007bff;
+      text-align: center;
+      width: 100%;
+    }
+
+    /* === Contenu principal === */
+    .mai {
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+    }
+
+    button, a {
+      display: inline-block;
+      padding: 15px 30px;
+      background: #28a792;
+      color: white;
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 1.1em;
+    }
+
+    button:hover, a:hover {
+      background: #218838;
+    }
+
+    /* === Formulaire caché === */
+    .form-container {
+      display: none;
+      margin-top: 20px;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .form-container input {
+      padding: 10px;
+      width: 250px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Page 1 -->
+  <div class="welcome-box">
+    <div class="welcome-content">
+      <h1>Bienvenue 👋</h1>
+      <p>Organisez vos tâches facilement avec notre application To-Do List.</p>
+      <a onclick="scrollToFirst()">Accéder à ma To-Do List</a>
+    </div>
+  </div>
+
+  <!-- Page 2 -->
+  <div id="first">
+    <!-- En-tête -->
+    <header>
+      To-Do List
+    </header>
+
+    <!-- Contenu principal -->
+    <div class="mai">
+      <!-- Bouton Ajouter -->
+      <button onclick="toggleForm()">➕ Ajouter une nouvelle tâche</button>
+
+      <!-- Formulaire caché -->
+      <div id="formBox" class="form-container">
+        <input type="text" id="taskInput" placeholder="Écrire une tâche...">
+        <button onclick="addTask()">Ajouter</button>
+      </div>
+
+      <!-- Bouton Voir liste -->
+      <a href="liste.html">📋 Voir mes tâches</a>
+    </div>
+  </div>
+
+  <script>
+    /* Scroll fluide vers la section 2 */
+    function scrollToFirst() {
+      document.getElementById("first").scrollIntoView({ behavior: "smooth" });
+    }
+
+    /* Affiche/cache le formulaire */
+    function toggleForm() {
+      const form = document.getElementById("formBox");
+      form.style.display = (form.style.display === "block") ? "none" : "block";
+    }
+
+    /* Ajoute une tâche dans localStorage */
+    function addTask() {
+      const task = document.getElementById("taskInput").value.trim();
+      if (task) {
+        // Récupère les anciennes tâches
+        let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+        // Ajoute la nouvelle
+        tasks.push(task);
+        // Sauvegarde dans localStorage
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+
+        alert("Tâche ajoutée : " + task);
+
+        // Reset formulaire
+        document.getElementById("taskInput").value = "";
+        document.getElementById("formBox").style.display = "none";
+      } else {
+        alert("Veuillez entrer une tâche !");
+      }
+    }
+  </script>
+</body>
+</html>
