@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8">
   <title>Accueil - Ma To-Do List</title>
@@ -10,7 +11,6 @@
       scroll-behavior: smooth;
     }
 
-    /* --- Section Welcome --- */
     .welcome-box {
       height: 100vh;
       display: flex;
@@ -25,7 +25,7 @@
       background: white;
       padding: 40px;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       display: inline-block;
     }
 
@@ -56,7 +56,6 @@
       background: #218838;
     }
 
-    /* --- Section First (page 2) --- */
     #first {
       height: 100vh;
       background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
@@ -65,7 +64,6 @@
       align-items: center;
     }
 
-    /* --- En-tête --- */
     header {
       display: flex;
       justify-content: center;
@@ -79,7 +77,6 @@
       width: 100%;
     }
 
-    /* === Contenu principal === */
     .mai {
       min-height: 80vh;
       display: flex;
@@ -89,7 +86,8 @@
       gap: 20px;
     }
 
-    button, a {
+    button,
+    a {
       display: inline-block;
       padding: 15px 30px;
       background: #28a792;
@@ -103,18 +101,18 @@
       font-size: 1.1em;
     }
 
-    button:hover, a:hover {
+    button:hover,
+    a:hover {
       background: #218838;
     }
 
-    /* === Formulaire caché === */
     .form-container {
       display: none;
       margin-top: 20px;
       background: white;
       padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
 
     .form-container input {
@@ -122,12 +120,12 @@
       width: 250px;
       border: 1px solid #ccc;
       border-radius: 5px;
-      margin-right: 10px;
+      margin: 5px 0;
     }
   </style>
 </head>
+
 <body>
-  <!-- Page 1 -->
   <div class="welcome-box">
     <div class="welcome-content">
       <h1>Bienvenue 👋</h1>
@@ -136,60 +134,72 @@
     </div>
   </div>
 
-  <!-- Page 2 -->
   <div id="first">
-    <!-- En-tête -->
-    <header>
-      To-Do List
-    </header>
+    <header>To-Do List</header>
 
-    <!-- Contenu principal -->
     <div class="mai">
-      <!-- Bouton Ajouter -->
       <button onclick="toggleForm()">➕ Ajouter une nouvelle tâche</button>
 
-      <!-- Formulaire caché -->
       <div id="formBox" class="form-container">
         <input type="text" id="taskInput" placeholder="Écrire une tâche...">
+        <input type="date" id="taskDate">
+        <input type="time" id="taskTime">
         <button onclick="addTask()">Ajouter</button>
       </div>
 
-      <!-- Bouton Voir liste -->
       <a href="liste.html">📋 Voir mes tâches</a>
     </div>
   </div>
 
   <script>
-    /* Scroll fluide vers la section 2 */
+    // Demande la permission pour afficher des notifications
+if ("Notification" in window) {
+  Notification.requestPermission().then(permission => {
+    if (permission === "granted") {
+      console.log("✅ Notifications activées");
+    } else {
+      console.log("❌ Notifications refusées");
+    }
+  });
+}
     function scrollToFirst() {
       document.getElementById("first").scrollIntoView({ behavior: "smooth" });
     }
 
-    /* Affiche/cache le formulaire */
     function toggleForm() {
       const form = document.getElementById("formBox");
       form.style.display = (form.style.display === "block") ? "none" : "block";
     }
 
-    /* Ajoute une tâche dans localStorage */
+    // Ajouter une tâche avec date et heure
     function addTask() {
-      const task = document.getElementById("taskInput").value.trim();
-      if (task) {
-        // Récupère les anciennes tâches
-        let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-        // Ajoute la nouvelle
-        tasks.push(task);
-        // Sauvegarde dans localStorage
-        localStorage.setItem("tasks", JSON.stringify(tasks));
+      const title = document.getElementById("taskInput").value.trim();
+      const date = document.getElementById("taskDate").value;
+      const time = document.getElementById("taskTime").value;
 
-        alert("Tâche ajoutée : " + task);
-
-        // Reset formulaire
-        document.getElementById("taskInput").value = "";
-        document.getElementById("formBox").style.display = "none";
-      } else {
-        alert("Veuillez entrer une tâche !");
+      if (!title || !date || !time) {
+        alert("Veuillez remplir tous les champs !");
+        return;
       }
+
+      // Créer un objet tâche
+      const newTask = {
+        title: title,
+        createdAt: new Date().toISOString(),
+        dueDate: date,
+        dueTime: time
+      };
+
+      let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+      tasks.push(newTask);
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+
+      alert("✅ Tâche ajoutée avec succès !");
+      document.getElementById("taskInput").value = "";
+      document.getElementById("taskDate").value = "";
+      document.getElementById("taskTime").value = "";
+      document.getElementById("formBox").style.display = "none";
+      
     }
   </script>
 </body>
