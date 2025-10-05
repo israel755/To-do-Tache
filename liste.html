@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
   <meta charset="UTF-8">
   <title>Mes tâches - To-Do List</title>
@@ -26,7 +27,7 @@
       background: white;
       padding: 20px;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
 
     .task-item {
@@ -42,12 +43,14 @@
       background: #e2e6ea;
     }
 
-    /* --- Popup --- */
     .popup {
-      display: none; 
+      display: none;
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5);
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
       justify-content: center;
       align-items: center;
     }
@@ -58,7 +61,7 @@
       border-radius: 12px;
       width: 300px;
       text-align: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
     .popup-content input {
@@ -84,42 +87,29 @@
       color: white;
     }
 
-    .save-btn:hover {
-      background: #218838;
-    }
-
     .delete-btn {
       background: #dc3545;
       color: white;
-    }
-
-    .delete-btn:hover {
-      background: #c82333;
     }
 
     .cancel-btn {
       background: #6c757d;
       color: white;
     }
-
-    .cancel-btn:hover {
-      background: #5a6268;
-    }
   </style>
 </head>
+
 <body>
   <header>📋 Mes tâches</header>
 
-  <div class="task-list" id="taskList">
-    <!-- Les tâches apparaîtront ici -->
-  </div>
+  <div class="task-list" id="taskList"></div>
 
-  <!-- Popup pour modification -->
   <div class="popup" id="popup">
     <div class="popup-content">
       <h3>Modifier la tâche</h3>
       <input type="text" id="editInput">
-      <br>
+      <input type="date" id="editDate">
+      <input type="time" id="editTime"><br>
       <button class="save-btn" onclick="saveTask()">Enregistrer</button>
       <button class="delete-btn" onclick="deleteTask()">Supprimer</button>
       <button class="cancel-btn" onclick="closePopup()">Annuler</button>
@@ -127,10 +117,33 @@
   </div>
 
   <script>
+    function checkNotifications() {
+  const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+  const now = new Date();
+  const nowString = now.toISOString().slice(0, 16); // Format ISO sans secondes
+
+  tasks.forEach(task => {
+    if (task.dueAt === nowString) { // Si la date correspond exactement à maintenant
+      showNotification(task.text);
+    }
+  });
+}
+
+function showNotification(message) {
+  if (Notification.permission === "granted") {
+    new Notification("⏰ Rappel de tâche", {
+      body: `Il est l'heure de : ${message}`,
+      icon: "https://cdn-icons-png.flaticon.com/512/1827/1827379.png" // petite icône
+    });
+  }
+}
+
+// Vérifie toutes les minutes
+setInterval(checkNotifications, 60000);
+
     let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
     let currentIndex = null;
 
-    // Afficher toutes les tâches
     function renderTasks() {
       const list = document.getElementById("taskList");
       list.innerHTML = "";
@@ -143,49 +156,60 @@
       tasks.forEach((task, index) => {
         const div = document.createElement("div");
         div.className = "task-item";
-        div.textContent = task;
+
+        const createdAt = new Date(task.createdAt).toLocaleString();
+        const due = `${task.dueDate} à ${task.dueTime}`;
+
+        div.innerHTML = `
+          <strong>${task.title}</strong><br>
+          🕒 <small>Créée le : ${createdAt}</small><br>
+          📅 <small>À faire le : ${due}</small>
+        `;
+
         div.onclick = () => openPopup(index);
         list.appendChild(div);
       });
     }
 
-    // Ouvrir popup
     function openPopup(index) {
       currentIndex = index;
-      document.getElementById("editInput").value = tasks[index];
+      document.getElementById("editInput").value = tasks[index].title;
+      document.getElementById("editDate").value = tasks[index].dueDate;
+      document.getElementById("editTime").value = tasks[index].dueTime;
       document.getElementById("popup").style.display = "flex";
     }
 
-    // Fermer popup
     function closePopup() {
       document.getElementById("popup").style.display = "none";
     }
 
-    // Enregistrer modifications
     function saveTask() {
       const newText = document.getElementById("editInput").value.trim();
-      if (newText) {
-        tasks[currentIndex] = newText;
+      const newDate = document.getElementById("editDate").value;
+      const newTime = document.getElementById("editTime").value;
+
+      if (!newText || !newDate || !newTime) {
+        alert("Veuillez remplir tous les champs !");
+        return;
+      }
+
+      tasks[currentIndex].title = newText;
+      tasks[currentIndex].dueDate = newDate;
+      tasks[currentIndex].dueTime = newTime;
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+      renderTasks();
+      closePopup();
+    }
+
+    function deleteTask() {
+      if (confirm("Êtes-vous sûr de vouloir supprimer cette tâche ?")) {
+        tasks.splice(currentIndex, 1);
         localStorage.setItem("tasks", JSON.stringify(tasks));
         renderTasks();
         closePopup();
-      } else {
-        alert("Veuillez entrer un texte !");
       }
     }
 
-   // Supprimer tâche avec confirmation
-function deleteTask() {
-  if (confirm("Êtes-vous sûr de vouloir supprimer cette tâche ?")) {
-    tasks.splice(currentIndex, 1);                  // Supprime la tâche
-    localStorage.setItem("tasks", JSON.stringify(tasks)); // Met à jour le localStorage
-    renderTasks();                                  // Rafraîchit l'affichage
-    closePopup();                                   // Ferme la popup
-  }
-}
-
-
-    // Charger au début
     renderTasks();
   </script>
 </body>
