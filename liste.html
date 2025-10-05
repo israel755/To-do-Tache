@@ -1,216 +1,205 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
   <meta charset="UTF-8">
-  <title>Mes tâches - To-Do List</title>
+  <title>Liste des tâches</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      background: linear-gradient(135deg, #74ebd5 0%, #ACB6E5 100%);
-      color: #333;
-    }
-
-    header {
+      font-family: Arial, sans-serif;
+      background: #f8fafc;
+      color: #1e293b;
       text-align: center;
       padding: 20px;
+    }
+
+    h1 {
+      color: #2563eb; /* bleu adaptable */
       font-size: 2.5em;
-      font-weight: bold;
-      background: #007bff;
-      color: white;
+      margin-bottom: 20px;
     }
 
-    .task-list {
-      max-width: 600px;
-      margin: 40px auto;
-      background: white;
-      padding: 20px;
+    ul {
+      list-style: none;
+      padding: 0;
+      width: 80%;
+      margin: auto;
+    }
+
+    li {
+      background: #ffffff;
+      margin: 10px 0;
+      padding: 15px;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    }
-
-    .task-item {
-      padding: 12px;
-      margin: 8px 0;
-      background: #f8f9fa;
-      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
       cursor: pointer;
-      transition: 0.3s;
+      transition: transform 0.2s ease;
     }
 
-    .task-item:hover {
-      background: #e2e6ea;
+    li:hover {
+      transform: scale(1.02);
+      background: #e0f2fe;
     }
 
-    .popup {
+    #popup {
       display: none;
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      justify-content: center;
-      align-items: center;
-    }
-
-    .popup-content {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       background: white;
       padding: 20px;
       border-radius: 12px;
-      width: 300px;
-      text-align: center;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
     }
 
-    .popup-content input {
-      width: 90%;
-      padding: 10px;
-      margin: 10px 0;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
-
-    .popup-content button {
-      padding: 10px 15px;
-      margin: 5px;
+    button {
+      background-color: #2563eb;
+      color: white;
       border: none;
       border-radius: 8px;
-      font-weight: bold;
+      padding: 10px 15px;
+      margin: 5px;
       cursor: pointer;
-      transition: 0.3s;
     }
 
-    .save-btn {
-      background: #28a745;
-      color: white;
+    button:hover {
+      background-color: #1e40af;
     }
 
-    .delete-btn {
-      background: #dc3545;
-      color: white;
-    }
-
-    .cancel-btn {
-      background: #6c757d;
-      color: white;
+    .task-info {
+      font-size: 0.9em;
+      color: #475569;
     }
   </style>
 </head>
 
 <body>
-  <header>📋 Mes tâches</header>
+  <h1>🗓️ To-Do List</h1>
+  <ul id="taskList"></ul>
 
-  <div class="task-list" id="taskList"></div>
+  <!-- Fenêtre de modification/suppression -->
+  <div id="popup">
+    <h3>Modifier la tâche</h3>
+    <input type="text" id="editTitle" placeholder="Titre"><br><br>
+    <label>Date prévue : </label>
+    <input type="date" id="editDate"><br><br>
+    <label>Heure prévue : </label>
+    <input type="time" id="editTime"><br><br>
 
-  <div class="popup" id="popup">
-    <div class="popup-content">
-      <h3>Modifier la tâche</h3>
-      <input type="text" id="editInput">
-      <input type="date" id="editDate">
-      <input type="time" id="editTime"><br>
-      <button class="save-btn" onclick="saveTask()">Enregistrer</button>
-      <button class="delete-btn" onclick="deleteTask()">Supprimer</button>
-      <button class="cancel-btn" onclick="closePopup()">Annuler</button>
-    </div>
+    <button id="saveBtn">💾 Enregistrer</button>
+    <button id="deleteBtn">🗑️ Supprimer</button>
+    <button onclick="closePopup()">❌ Fermer</button>
   </div>
 
   <script>
-    function checkNotifications() {
-  const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-  const now = new Date();
-  const nowString = now.toISOString().slice(0, 16); // Format ISO sans secondes
-
-  tasks.forEach(task => {
-    if (task.dueAt === nowString) { // Si la date correspond exactement à maintenant
-      showNotification(task.text);
-    }
-  });
-}
-
-function showNotification(message) {
-  if (Notification.permission === "granted") {
-    new Notification("⏰ Rappel de tâche", {
-      body: `Il est l'heure de : ${message}`,
-      icon: "https://cdn-icons-png.flaticon.com/512/1827/1827379.png" // petite icône
-    });
-  }
-}
-
-// Vérifie toutes les minutes
-setInterval(checkNotifications, 60000);
-
     let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
     let currentIndex = null;
 
+    const list = document.getElementById("taskList");
+    const popup = document.getElementById("popup");
+    const editTitle = document.getElementById("editTitle");
+    const editDate = document.getElementById("editDate");
+    const editTime = document.getElementById("editTime");
+
+    // 🔹 Fonction pour afficher toutes les tâches
     function renderTasks() {
-      const list = document.getElementById("taskList");
       list.innerHTML = "";
-
-      if (tasks.length === 0) {
-        list.innerHTML = "<p>Aucune tâche ajoutée.</p>";
-        return;
-      }
-
       tasks.forEach((task, index) => {
-        const div = document.createElement("div");
-        div.className = "task-item";
-
-        const createdAt = new Date(task.createdAt).toLocaleString();
-        const due = `${task.dueDate} à ${task.dueTime}`;
-
-        div.innerHTML = `
+        const li = document.createElement("li");
+        li.innerHTML = `
           <strong>${task.title}</strong><br>
-          🕒 <small>Créée le : ${createdAt}</small><br>
-          📅 <small>À faire le : ${due}</small>
+          <div class="task-info">
+            Créée le : ${task.createdAt}<br>
+            À réaliser le : ${task.dueDate} à ${task.dueTime}
+          </div>
         `;
-
-        div.onclick = () => openPopup(index);
-        list.appendChild(div);
+        li.onclick = () => openPopup(index);
+        list.appendChild(li);
       });
     }
 
+    renderTasks();
+
+    // 🔹 Ouvre le popup de modification
     function openPopup(index) {
       currentIndex = index;
-      document.getElementById("editInput").value = tasks[index].title;
-      document.getElementById("editDate").value = tasks[index].dueDate;
-      document.getElementById("editTime").value = tasks[index].dueTime;
-      document.getElementById("popup").style.display = "flex";
+      const task = tasks[index];
+      editTitle.value = task.title;
+      editDate.value = task.dueDate;
+      editTime.value = task.dueTime;
+      popup.style.display = "block";
     }
 
+    // 🔹 Ferme le popup
     function closePopup() {
-      document.getElementById("popup").style.display = "none";
+      popup.style.display = "none";
     }
 
-    function saveTask() {
-      const newText = document.getElementById("editInput").value.trim();
-      const newDate = document.getElementById("editDate").value;
-      const newTime = document.getElementById("editTime").value;
+    // 🔹 Enregistre les modifications
+    document.getElementById("saveBtn").onclick = function() {
+      const title = editTitle.value.trim();
+      if (title === "") return alert("Le titre ne peut pas être vide.");
 
-      if (!newText || !newDate || !newTime) {
-        alert("Veuillez remplir tous les champs !");
-        return;
-      }
+      tasks[currentIndex].title = title;
+      tasks[currentIndex].dueDate = editDate.value;
+      tasks[currentIndex].dueTime = editTime.value;
 
-      tasks[currentIndex].title = newText;
-      tasks[currentIndex].dueDate = newDate;
-      tasks[currentIndex].dueTime = newTime;
       localStorage.setItem("tasks", JSON.stringify(tasks));
       renderTasks();
       closePopup();
-    }
+    };
 
-    function deleteTask() {
+    // 🔹 Supprime une tâche avec confirmation "Oui / Non"
+    document.getElementById("deleteBtn").onclick = function() {
       if (confirm("Êtes-vous sûr de vouloir supprimer cette tâche ?")) {
         tasks.splice(currentIndex, 1);
         localStorage.setItem("tasks", JSON.stringify(tasks));
         renderTasks();
         closePopup();
       }
+    };
+
+    // ==========================
+    // 🔔 NOTIFICATIONS AUTOMATIQUES
+    // ==========================
+
+    // 1️⃣ Demande la permission au chargement
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission();
     }
 
-    renderTasks();
+    // 2️⃣ Fonction de vérification des dates
+    function checkNotifications() {
+      const now = new Date();
+      const nowISO = now.toISOString().slice(0, 16); // ex: "2025-10-05T09:30"
+
+      tasks.forEach((task, i) => {
+        if (!task.dueDate || !task.dueTime || task.notified) return;
+
+        const taskDateTime = `${task.dueDate}T${task.dueTime}`;
+        const diff = Math.abs(new Date(taskDateTime) - now);
+
+        // Si l'heure correspond à +/- 1 minute
+        if (diff <= 60000) {
+          showNotification(task.title);
+          tasks[i].notified = true; // éviter les répétitions
+          localStorage.setItem("tasks", JSON.stringify(tasks));
+        }
+      });
+    }
+
+    // 3️⃣ Affiche la notification
+    function showNotification(message) {
+      if (Notification.permission === "granted") {
+        new Notification("⏰ Rappel de tâche", {
+          body: `Il est temps de : ${message}`,
+          icon: "https://cdn-icons-png.flaticon.com/512/1827/1827379.png"
+        });
+      }
+    }
+
+    // 4️⃣ Vérifie toutes les 30 secondes
+    setInterval(checkNotifications, 30000);
   </script>
 </body>
 </html>
