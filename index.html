@@ -199,6 +199,34 @@ if ("Notification" in window) {
       document.getElementById("taskDate").value = "";
       document.getElementById("taskTime").value = "";
       document.getElementById("formBox").style.display = "none";
+      // 🔹 Étape 1 : Fonction pour demander la permission
+function askNotificationPermission() {
+  if (!("Notification" in window)) {
+    alert("⚠️ Ce navigateur ne supporte pas les notifications.");
+    return;
+  }
+
+  Notification.requestPermission().then(permission => {
+    if (permission === "granted") {
+      alert("✅ Notifications activées !");
+      // 🔹 Étape 2 : Test immédiat
+      new Notification("🔔 Test de notification", {
+        body: "Les notifications fonctionnent correctement !",
+        icon: "https://cdn-icons-png.flaticon.com/512/1827/1827379.png"
+      });
+    } else {
+      alert("❌ Vous avez refusé les notifications.");
+    }
+  });
+}
+
+// 🔹 Étape 3 : On demande l’autorisation après un clic utilisateur
+document.addEventListener("DOMContentLoaded", () => {
+  // Par exemple après avoir cliqué sur "Accéder à ma To-Do List"
+  document.querySelector(".welcome-content a").addEventListener("click", () => {
+    askNotificationPermission();
+  });
+});
       
     }
   </script>
