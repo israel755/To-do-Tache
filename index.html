@@ -152,54 +152,55 @@
   </div>
 
   <script>
-    // Demande la permission pour afficher des notifications
-if ("Notification" in window) {
-  Notification.requestPermission().then(permission => {
-    if (permission === "granted") {
-      console.log("✅ Notifications activées");
-    } else {
-      console.log("❌ Notifications refusées");
-    }
-  });
+// ---------------------------------------------
+// 🔹 1️⃣ Fonction pour faire défiler la page
+// ---------------------------------------------
+function scrollToFirst() {
+  document.getElementById("first").scrollIntoView({ behavior: "smooth" });
 }
-    function scrollToFirst() {
-      document.getElementById("first").scrollIntoView({ behavior: "smooth" });
-    }
 
-    function toggleForm() {
-      const form = document.getElementById("formBox");
-      form.style.display = (form.style.display === "block") ? "none" : "block";
-    }
+// ---------------------------------------------
+// 🔹 2️⃣ Afficher / cacher le formulaire
+// ---------------------------------------------
+function toggleForm() {
+  const form = document.getElementById("formBox");
+  form.style.display = (form.style.display === "block") ? "none" : "block";
+}
 
-    // Ajouter une tâche avec date et heure
-    function addTask() {
-      const title = document.getElementById("taskInput").value.trim();
-      const date = document.getElementById("taskDate").value;
-      const time = document.getElementById("taskTime").value;
+// ---------------------------------------------
+// 🔹 3️⃣ Fonction pour ajouter une tâche
+// ---------------------------------------------
+function addTask() {
+  const title = document.getElementById("taskInput").value.trim();
+  const date = document.getElementById("taskDate").value;
+  const time = document.getElementById("taskTime").value;
 
-      if (!title || !date || !time) {
-        alert("Veuillez remplir tous les champs !");
-        return;
-      }
+  if (!title || !date || !time) {
+    alert("Veuillez remplir tous les champs !");
+    return;
+  }
 
-      // Créer un objet tâche
-      const newTask = {
-        title: title,
-        createdAt: new Date().toISOString(),
-        dueDate: date,
-        dueTime: time
-      };
+  const newTask = {
+    title: title,
+    createdAt: new Date().toISOString(),
+    dueDate: date,
+    dueTime: time
+  };
 
-      let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-      tasks.push(newTask);
-      localStorage.setItem("tasks", JSON.stringify(tasks));
+  let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+  tasks.push(newTask);
+  localStorage.setItem("tasks", JSON.stringify(tasks));
 
-      alert("✅ Tâche ajoutée avec succès !");
-      document.getElementById("taskInput").value = "";
-      document.getElementById("taskDate").value = "";
-      document.getElementById("taskTime").value = "";
-      document.getElementById("formBox").style.display = "none";
-      // 🔹 Étape 1 : Fonction pour demander la permission
+  alert("✅ Tâche ajoutée avec succès !");
+  document.getElementById("taskInput").value = "";
+  document.getElementById("taskDate").value = "";
+  document.getElementById("taskTime").value = "";
+  document.getElementById("formBox").style.display = "none";
+}
+
+// ---------------------------------------------
+// 🔹 4️⃣ Fonction pour demander la permission
+// ---------------------------------------------
 function askNotificationPermission() {
   if (!("Notification" in window)) {
     alert("⚠️ Ce navigateur ne supporte pas les notifications.");
@@ -209,7 +210,7 @@ function askNotificationPermission() {
   Notification.requestPermission().then(permission => {
     if (permission === "granted") {
       alert("✅ Notifications activées !");
-      // 🔹 Étape 2 : Test immédiat
+      // 🔹 Test immédiat pour vérifier que ça marche
       new Notification("🔔 Test de notification", {
         body: "Les notifications fonctionnent correctement !",
         icon: "https://cdn-icons-png.flaticon.com/512/1827/1827379.png"
@@ -220,15 +221,16 @@ function askNotificationPermission() {
   });
 }
 
-// 🔹 Étape 3 : On demande l’autorisation après un clic utilisateur
+// ---------------------------------------------
+// 🔹 5️⃣ On attend le clic sur “Accéder à ma To-Do List”
+// ---------------------------------------------
 document.addEventListener("DOMContentLoaded", () => {
-  // Par exemple après avoir cliqué sur "Accéder à ma To-Do List"
-  document.querySelector(".welcome-content a").addEventListener("click", () => {
+  const accessBtn = document.querySelector(".welcome-content a");
+  accessBtn.addEventListener("click", () => {
     askNotificationPermission();
   });
 });
-      
-    }
-  </script>
+</script>
+
 </body>
 </html>
