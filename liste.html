@@ -116,118 +116,102 @@
     </div>
   </div>
 
- <script>
-  // 🕒 Vérifie les notifications toutes les 60 secondes
-  setInterval(checkNotifications, 60000); // 1 minute
+<script>
+    function checkNotifications() {
+  const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+  const now = new Date();
+  const nowString = now.toISOString().slice(0, 16); // Format ISO sans secondes
 
-  function checkNotifications() {
-    const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    const now = new Date();
+  tasks.forEach(task => {
+    if (task.dueAt === nowString) { // Si la date correspond exactement à maintenant
+      showNotification(task.text);
+    }
+  });
+}
 
-    tasks.forEach((task, index) => {
-      // On combine la date et l’heure prévues de la tâche
-      const taskDateTime = new Date(`${task.dueDate}T${task.dueTime}`);
+function showNotification(message) {
+  if (Notification.permission === "granted") {
+    new Notification("⏰ Rappel de tâche", {
+      body: `Il est l'heure de : ${message}`,
+      icon: "https://cdn-icons-png.flaticon.com/512/1827/1827379.png" // petite icône
+    });
+  }
+}
 
-      // Si la tâche est prévue maintenant et qu’elle n’a pas encore été notifiée
-      if (!task.notified && now >= taskDateTime) {
-        showNotification(task.title);
+// Vérifie toutes les minutes
+setInterval(checkNotifications, 60000);
 
-        // On marque la tâche comme "notifiée" pour éviter les répétitions
-        tasks[index].notified = true;
-        localStorage.setItem("tasks", JSON.stringify(tasks));
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    let currentIndex = null;
+
+    function renderTasks() {
+      const list = document.getElementById("taskList");
+      list.innerHTML = "";
+
+      if (tasks.length === 0) {
+        list.innerHTML = "<p>Aucune tâche ajoutée.</p>";
+        return;
       }
-    });
-  }
 
-  // 🔔 Fonction d’affichage d’une notification
-  function showNotification(message) {
-    if (Notification.permission === "granted") {
-      new Notification("⏰ Rappel de tâche", {
-        body: `Il est l'heure de : ${message}`,
-        icon: "https://cdn-icons-png.flaticon.com/512/1827/1827379.png"
+      tasks.forEach((task, index) => {
+        const div = document.createElement("div");
+        div.className = "task-item";
+
+        const createdAt = new Date(task.createdAt).toLocaleString();
+        const due = `${task.dueDate} à ${task.dueTime}`;
+
+        div.innerHTML = `
+          <strong>${task.title}</strong><br>
+          🕒 <small>Créée le : ${createdAt}</small><br>
+          📅 <small>À faire le : ${due}</small>
+        `;
+
+        div.onclick = () => openPopup(index);
+        list.appendChild(div);
       });
-    } else {
-      console.log("⚠️ Notifications désactivées.");
-    }
-  }
-
-  // 🗂️ Chargement et affichage des tâches enregistrées
-  let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-  let currentIndex = null;
-
-  function renderTasks() {
-    const list = document.getElementById("taskList");
-    list.innerHTML = "";
-
-    if (tasks.length === 0) {
-      list.innerHTML = "<p>Aucune tâche ajoutée.</p>";
-      return;
     }
 
-    tasks.forEach((task, index) => {
-      const div = document.createElement("div");
-      div.className = "task-item";
-
-      const createdAt = new Date(task.createdAt).toLocaleString();
-      const due = `${task.dueDate} à ${task.dueTime}`;
-
-      div.innerHTML = `
-        <strong>${task.title}</strong><br>
-        🕒 <small>Créée le : ${createdAt}</small><br>
-        📅 <small>À faire le : ${due}</small>
-      `;
-
-      div.onclick = () => openPopup(index);
-      list.appendChild(div);
-    });
-  }
-
-  // 📝 Ouvre la fenêtre d’édition
-  function openPopup(index) {
-    currentIndex = index;
-    document.getElementById("editInput").value = tasks[index].title;
-    document.getElementById("editDate").value = tasks[index].dueDate;
-    document.getElementById("editTime").value = tasks[index].dueTime;
-    document.getElementById("popup").style.display = "flex";
-  }
-
-  // ❌ Ferme la fenêtre d’édition
-  function closePopup() {
-    document.getElementById("popup").style.display = "none";
-  }
-
-  // 💾 Enregistre les modifications d’une tâche
-  function saveTask() {
-    const newText = document.getElementById("editInput").value.trim();
-    const newDate = document.getElementById("editDate").value;
-    const newTime = document.getElementById("editTime").value;
-
-    if (!newText || !newDate || !newTime) {
-      alert("Veuillez remplir tous les champs !");
-      return;
+    function openPopup(index) {
+      currentIndex = index;
+      document.getElementById("editInput").value = tasks[index].title;
+      document.getElementById("editDate").value = tasks[index].dueDate;
+      document.getElementById("editTime").value = tasks[index].dueTime;
+      document.getElementById("popup").style.display = "flex";
     }
 
-    tasks[currentIndex].title = newText;
-    tasks[currentIndex].dueDate = newDate;
-    tasks[currentIndex].dueTime = newTime;
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-    renderTasks();
-    closePopup();
-  }
+    function closePopup() {
+      document.getElementById("popup").style.display = "none";
+    }
 
-  // 🗑️ Supprime une tâche
-  function deleteTask() {
-    if (confirm("Êtes-vous sûr de vouloir supprimer cette tâche ?")) {
-      tasks.splice(currentIndex, 1);
+    function saveTask() {
+      const newText = document.getElementById("editInput").value.trim();
+      const newDate = document.getElementById("editDate").value;
+      const newTime = document.getElementById("editTime").value;
+
+      if (!newText || !newDate || !newTime) {
+        alert("Veuillez remplir tous les champs !");
+        return;
+      }
+
+      tasks[currentIndex].title = newText;
+      tasks[currentIndex].dueDate = newDate;
+      tasks[currentIndex].dueTime = newTime;
       localStorage.setItem("tasks", JSON.stringify(tasks));
       renderTasks();
       closePopup();
     }
-  }
 
-  // 🚀 Lance l’affichage initial
-  renderTasks();
-</script>
+    function deleteTask() {
+      if (confirm("Êtes-vous sûr de vouloir supprimer cette tâche ?")) {
+        tasks.splice(currentIndex, 1);
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+        renderTasks();
+        closePopup();
+      }
+    }
+
+    renderTasks();
+  </script>
 
 </body>
 </html>
