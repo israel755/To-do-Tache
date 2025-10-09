@@ -1,198 +1,160 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
   <meta charset="UTF-8">
-  <title>Mes tâches - To-Do List</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mes tâches</title>
   <style>
-    /* 🌈 Style global */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: "Poppins", "Segoe UI", sans-serif;
+      font-family: "Poppins", sans-serif;
     }
 
     body {
-      background: linear-gradient(135deg, #4facfe, #00f2fe);
-      color: #333;
+      background: linear-gradient(135deg, #9333ea, #4f46e5);
+      color: white;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      animation: fadeIn 1s ease-in-out;
+      justify-content: flex-start;
+      padding: 30px 10px;
     }
 
-    /* 🏷️ En-tête */
     header {
-      width: 100%;
+      font-size: 2.3em;
+      margin-bottom: 25px;
       text-align: center;
-      padding: 25px 10px;
-      font-size: 2.4em;
-      font-weight: 700;
-      background: rgba(0, 0, 0, 0.2);
-      backdrop-filter: blur(8px);
-      color: #fff;
-      letter-spacing: 1px;
-      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.15);
     }
 
-    /* 📋 Liste des tâches */
     .task-list {
-      max-width: 700px;
       width: 90%;
-      margin: 40px auto;
-      background: rgba(255, 255, 255, 0.95);
-      padding: 25px 30px;
-      border-radius: 20px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-      animation: fadeInUp 1s ease;
+      max-width: 700px;
+      background: #ffffff1a;
+      backdrop-filter: blur(10px);
+      border-radius: 18px;
+      padding: 25px;
+      box-shadow: 0 4px 25px rgba(0, 0, 0, 0.25);
     }
 
     .task-item {
-      background: #f8fafc;
-      margin: 12px 0;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
       padding: 15px 20px;
-      border-radius: 12px;
-      cursor: pointer;
+      margin-bottom: 15px;
       transition: all 0.3s ease;
-      border-left: 6px solid #00b09b;
+      cursor: pointer;
     }
 
     .task-item:hover {
-      background: #e3f2fd;
-      transform: translateY(-2px);
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+      background: rgba(255, 255, 255, 0.25);
+      transform: scale(1.02);
     }
 
     .task-item strong {
+      display: block;
       font-size: 1.1em;
-      color: #007bff;
+      color: #fff;
+      margin-bottom: 5px;
     }
 
     .task-item small {
-      color: #666;
-      font-size: 0.9em;
+      display: block;
+      color: #d1d5db;
     }
 
-    /* 🔹 Popup (fenêtre d’édition) */
     .popup {
-      display: none;
       position: fixed;
       top: 0;
       left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.4);
-      justify-content: center;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      display: none;
       align-items: center;
-      backdrop-filter: blur(2px);
-      animation: fadeIn 0.4s ease;
+      justify-content: center;
     }
 
     .popup-content {
-      background: #ffffff;
-      padding: 30px 25px;
-      border-radius: 15px;
+      background: white;
+      color: #333;
+      padding: 25px;
+      border-radius: 12px;
       width: 320px;
+      max-width: 90%;
       text-align: center;
-      box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
-      animation: popIn 0.4s ease;
-    }
-
-    .popup-content h3 {
-      color: #007bff;
-      margin-bottom: 15px;
     }
 
     .popup-content input {
-      width: 90%;
-      padding: 12px;
-      margin: 8px 0;
-      border: 1px solid #ccc;
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
       border-radius: 8px;
-      transition: border-color 0.3s ease;
-    }
-
-    .popup-content input:focus {
-      border-color: #007bff;
-      outline: none;
-      box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+      border: 1px solid #ccc;
     }
 
     .popup-content button {
-      padding: 10px 18px;
-      margin: 8px 5px;
+      background: #4f46e5;
+      color: white;
+      padding: 10px 15px;
       border: none;
       border-radius: 8px;
-      font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s ease;
+      margin: 5px;
+      transition: 0.3s;
     }
 
-    .save-btn {
-      background: linear-gradient(135deg, #00b09b, #96c93d);
-      color: white;
+    .popup-content button:hover {
+      background: #4338ca;
     }
 
-    .save-btn:hover {
-      background: linear-gradient(135deg, #009879, #7bbf29);
+    a {
+      display: inline-block;
+      margin-top: 25px;
+      text-decoration: none;
+      color: #fff;
+      background: #22c55e;
+      padding: 12px 25px;
+      border-radius: 10px;
+      transition: 0.3s;
+    }
+
+    a:hover {
+      background: #16a34a;
       transform: scale(1.05);
     }
 
-    .delete-btn {
-      background: linear-gradient(135deg, #ff416c, #ff4b2b);
-      color: white;
-    }
-
-    .delete-btn:hover {
-      transform: scale(1.05);
-    }
-
-    .cancel-btn {
-      background: #6c757d;
-      color: white;
-    }
-
-    .cancel-btn:hover {
-      background: #5a6268;
-      transform: scale(1.05);
-    }
-
-    /* 📱 Responsive */
+    /* ✅ Responsive */
     @media (max-width: 768px) {
       header {
-        font-size: 1.8em;
+        font-size: 1.9em;
       }
-
       .task-list {
         width: 92%;
         padding: 20px;
       }
+    }
 
-      .popup-content {
-        width: 90%;
+    @media (max-width: 480px) {
+      header {
+        font-size: 1.6em;
       }
-    }
-
-    /* ✨ Animations */
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes popIn {
-      from { transform: scale(0.9); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
+      .task-item {
+        font-size: 0.9em;
+        padding: 12px 15px;
+      }
+      .popup-content {
+        padding: 20px;
+      }
+      .popup-content button {
+        padding: 8px 10px;
+        font-size: 0.9em;
+      }
     }
   </style>
 </head>
-
 <body>
   <header>📋 Mes tâches</header>
 
@@ -201,29 +163,32 @@
   <div class="popup" id="popup">
     <div class="popup-content">
       <h3>Modifier la tâche</h3>
-      <input type="text" id="editInput" placeholder="Titre de la tâche">
+      <input type="text" id="editInput">
       <input type="date" id="editDate">
-      <input type="time" id="editTime"><br>
-      <button class="save-btn" onclick="saveTask()">💾 Enregistrer</button>
-      <button class="delete-btn" onclick="deleteTask()">🗑 Supprimer</button>
-      <button class="cancel-btn" onclick="closePopup()">❌ Annuler</button>
+      <input type="time" id="editTime">
+      <div>
+        <button onclick="saveTask()">💾 Enregistrer</button>
+        <button onclick="deleteTask()">🗑️ Supprimer</button>
+        <button onclick="closePopup()">❌ Fermer</button>
+      </div>
     </div>
   </div>
 
+  <a href="index.html">⬅️ Ajouter une nouvelle tâche</a>
+
   <script>
-    // 🕒 Vérifie les notifications toutes les minutes
-    setInterval(checkNotifications, 60000);
+    // === Notifications automatiques ===
+    Notification.requestPermission();
 
     function checkNotifications() {
       const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
       const now = new Date();
+      const nowDate = now.toISOString().slice(0, 10);
+      const nowTime = now.toTimeString().slice(0, 5);
 
-      tasks.forEach((task, index) => {
-        const taskDateTime = new Date(`${task.dueDate}T${task.dueTime}`);
-        if (!task.notified && now >= taskDateTime) {
+      tasks.forEach(task => {
+        if (task.dueDate === nowDate && task.dueTime === nowTime) {
           showNotification(task.title);
-          tasks[index].notified = true;
-          localStorage.setItem("tasks", JSON.stringify(tasks));
         }
       });
     }
@@ -237,6 +202,9 @@
       }
     }
 
+    setInterval(checkNotifications, 60000); // Vérifie chaque minute
+
+    // === Gestion des tâches ===
     let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
     let currentIndex = null;
 
@@ -245,7 +213,7 @@
       list.innerHTML = "";
 
       if (tasks.length === 0) {
-        list.innerHTML = "<p style='text-align:center; color:#555;'>Aucune tâche ajoutée pour le moment.</p>";
+        list.innerHTML = "<p>Aucune tâche ajoutée.</p>";
         return;
       }
 
@@ -257,9 +225,9 @@
         const due = `${task.dueDate} à ${task.dueTime}`;
 
         div.innerHTML = `
-          <strong>${task.title}</strong><br>
-          🕒 <small>Créée le : ${createdAt}</small><br>
-          📅 <small>À faire le : ${due}</small>
+          <strong>${task.title}</strong>
+          <small>🕒 Créée le : ${createdAt}</small>
+          <small>📅 À faire le : ${due}</small>
         `;
 
         div.onclick = () => openPopup(index);
