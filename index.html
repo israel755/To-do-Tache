@@ -2,278 +2,118 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Accueil - Ma To-Do List</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ajouter une tâche</title>
   <style>
-    /* 🌈 Style global */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: "Poppins", "Segoe UI", sans-serif;
+      font-family: "Poppins", sans-serif;
     }
 
-    html, body {
-      scroll-behavior: smooth;
-      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-      color: #333;
-      overflow-x: hidden;
-    }
-
-    /* 💎 Page d’accueil */
-    .welcome-box {
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: linear-gradient(135deg, #4facfe, #00f2fe);
-      text-align: center;
-      animation: fadeIn 1.5s ease-in-out;
-    }
-
-    .welcome-content {
-      background: white;
-      padding: 50px 60px;
-      border-radius: 20px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      max-width: 90%;
-      width: 420px;
-    }
-
-    .welcome-content:hover {
-      transform: scale(1.02);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-    }
-
-    .welcome-content h1 {
-      font-size: 2.5em;
-      color: #007bff;
-      margin-bottom: 15px;
-      font-weight: 700;
-    }
-
-    .welcome-content p {
-      font-size: 1.1em;
-      margin-bottom: 25px;
-      color: #555;
-    }
-
-    .welcome-content a {
-      display: inline-block;
-      padding: 14px 35px;
-      background: linear-gradient(135deg, #007bff, #00c6ff);
-      color: white;
-      text-decoration: none;
-      border-radius: 50px;
-      font-weight: 600;
-      transition: background 0.4s ease, transform 0.2s ease;
-    }
-
-    .welcome-content a:hover {
-      background: linear-gradient(135deg, #0056d2, #0096c7);
-      transform: scale(1.05);
-    }
-
-    /* 🧭 Section principale */
-    #first {
-      min-height: 100vh;
+    body {
+      background: linear-gradient(135deg, #4f46e5, #9333ea);
+      color: #fff;
       display: flex;
       flex-direction: column;
       align-items: center;
-      background: linear-gradient(135deg, #00f2fe, #4facfe);
-      padding-bottom: 40px;
-      animation: fadeInUp 1.2s ease-in-out;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
     }
 
     header {
-      width: 100%;
-      padding: 25px 0;
-      text-align: center;
-      font-size: 2.8em;
-      font-weight: 700;
-      color: white;
-      background: rgba(0, 0, 0, 0.2);
-      backdrop-filter: blur(5px);
-      letter-spacing: 2px;
-    }
-
-    .mai {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      gap: 20px;
-      padding: 20px;
-      width: 100%;
-    }
-
-    /* 🟢 Boutons */
-    button, a {
-      display: inline-block;
-      padding: 14px 35px;
-      background: linear-gradient(135deg, #00b09b, #96c93d);
-      color: white;
-      text-decoration: none;
-      border-radius: 50px;
+      font-size: 2.3em;
+      margin-bottom: 25px;
       font-weight: 600;
+    }
+
+    .welcome-content {
+      background: #ffffff1a;
+      backdrop-filter: blur(10px);
+      border-radius: 18px;
+      padding: 40px;
+      width: 90%;
+      max-width: 420px;
+      box-shadow: 0 5px 25px rgba(0, 0, 0, 0.25);
+    }
+
+    input, button {
+      width: 100%;
+      padding: 14px;
+      margin: 10px 0;
       border: none;
-      cursor: pointer;
-      transition: all 0.3s ease;
+      border-radius: 10px;
       font-size: 1em;
     }
 
-    button:hover, a:hover {
-      background: linear-gradient(135deg, #009879, #7bbf29);
+    input {
+      background: #f9f9ff;
+      color: #333;
+      outline: none;
+    }
+
+    button {
+      background: #22c55e;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: #16a34a;
       transform: scale(1.05);
     }
 
-    /* 🧾 Formulaire */
-    .form-container {
-      display: none;
-      flex-direction: column;
-      background: white;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
-      width: 90%;
-      max-width: 400px;
-      animation: fadeInUp 0.5s ease-in-out;
+    a {
+      display: inline-block;
+      margin-top: 15px;
+      text-decoration: none;
+      color: #fff;
+      background: #3b82f6;
+      padding: 12px 25px;
+      border-radius: 10px;
+      transition: all 0.3s ease;
     }
 
-    .form-container input {
-      margin: 10px 0;
-      padding: 12px;
-      width: 100%;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1em;
-      transition: border-color 0.3s;
+    a:hover {
+      background: #2563eb;
+      transform: scale(1.05);
     }
 
-    .form-container input:focus {
-      border-color: #007bff;
-      outline: none;
-      box-shadow: 0 0 6px rgba(0, 123, 255, 0.3);
-    }
-
-    /* 📱 Responsive */
     @media (max-width: 768px) {
-      .welcome-content {
-        padding: 35px 25px;
-      }
-      .welcome-content h1 {
-        font-size: 2em;
-      }
       header {
-        font-size: 2em;
+        font-size: 1.9em;
       }
-      button, a {
-        padding: 12px 25px;
+      .welcome-content {
+        padding: 30px;
+      }
+      input, button {
         font-size: 0.95em;
       }
     }
 
-    /* ✨ Animations */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(40px); }
-      to { opacity: 1; transform: translateY(0); }
+    @media (max-width: 480px) {
+      header {
+        font-size: 1.7em;
+      }
+      .welcome-content {
+        width: 92%;
+        padding: 25px;
+      }
     }
   </style>
 </head>
-
 <body>
-  <div class="welcome-box">
-    <div class="welcome-content">
-      <h1>Bienvenue 👋</h1>
-      <p>Organisez vos tâches efficacement avec notre To-Do List intelligente.</p>
-      <a onclick="scrollToFirst()">Accéder à ma To-Do List</a>
-    </div>
-  </div>
+  <header>📝 Ajouter une tâche</header>
 
-  <div id="first">
-    <header>To-Do List</header>
+  <div class="welcome-content">
+    <form id="taskForm">
+      <input type="text" id="taskTitle" placeholder="Titre de la tâche" required>
+      <label for="dueDate">📅 Date d’exécution :</label>
+      <input type="date" id="dueDate" required>
 
-    <div class="mai">
-      <button onclick="toggleForm()">➕ Ajouter une nouvelle tâche</button>
-
-      <div id="formBox" class="form-container">
-        <input type="text" id="taskInput" placeholder="Écrire une tâche...">
-        <input type="date" id="taskDate">
-        <input type="time" id="taskTime">
-        <button onclick="addTask()">Ajouter</button>
-      </div>
-
-      <a href="liste.html">📋 Voir mes tâches</a>
-    </div>
-  </div>
-
-  <script>
-    // Ton JavaScript d’origine reste inchangé
-    function scrollToFirst() {
-      document.getElementById("first").scrollIntoView({ behavior: "smooth" });
-    }
-
-    function toggleForm() {
-      const form = document.getElementById("formBox");
-      form.style.display = (form.style.display === "flex") ? "none" : "flex";
-    }
-
-    function addTask() {
-      const title = document.getElementById("taskInput").value.trim();
-      const date = document.getElementById("taskDate").value;
-      const time = document.getElementById("taskTime").value;
-
-      if (!title || !date || !time) {
-        alert("Veuillez remplir tous les champs !");
-        return;
-      }
-
-      const newTask = {
-        title: title,
-        createdAt: new Date().toISOString(),
-        dueDate: date,
-        dueTime: time
-      };
-
-      let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-      tasks.push(newTask);
-      localStorage.setItem("tasks", JSON.stringify(tasks));
-
-      alert("✅ Tâche ajoutée avec succès !");
-      document.getElementById("taskInput").value = "";
-      document.getElementById("taskDate").value = "";
-      document.getElementById("taskTime").value = "";
-      document.getElementById("formBox").style.display = "none";
-    }
-
-    function askNotificationPermission() {
-      if (!("Notification" in window)) {
-        alert("⚠️ Ce navigateur ne supporte pas les notifications.");
-        return;
-      }
-
-      Notification.requestPermission().then(permission => {
-        if (permission === "granted") {
-          new Notification("🔔 Test de notification", {
-            body: "Les notifications fonctionnent correctement !",
-            icon: "https://cdn-icons-png.flaticon.com/512/1827/1827379.png"
-          });
-        }
-      });
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const accessBtn = document.querySelector(".welcome-content a");
-      accessBtn.addEventListener("click", () => {
-        askNotificationPermission();
-      });
-    });
-  </script>
-</body>
-</html>
+      <label for="dueTime">⏰ Heure :</label>
+      <input type="time" id="dueTime" re
